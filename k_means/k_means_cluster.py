@@ -16,6 +16,52 @@ from feature_format import featureFormat, targetFeatureSplit
 
 
 
+def feature_rescaling(features):
+    rescaled=[]
+    f1=[]
+    f2=[]
+
+    for i in features:
+        f1.append(float(i[0]))
+        f2.append(float(i[1]))
+
+
+    minf1=min(f1)
+    maxf1=max(f1)
+
+    minf2=min(f2)
+    maxf2=max(f2)
+
+    divf2=maxf2-minf2
+    divf1=maxf1-minf1
+    if(divf1==0):
+        divf1=0.0000000000001
+
+    if(divf2==0):
+        divf2=0.0000000000001
+
+    list0=[]
+    list1=[]
+
+    for i in range(0,len(f1)):
+        res1=float((f1[i]-minf1)/divf1)
+        res2=float((f2[i]-minf2)/divf2)
+
+
+
+        list0.append(res1)
+        list1.append(res2)
+
+
+
+
+    rescaled=zip(list0,list1)
+
+    # That'd be the function that applies the rescaling, now before we apply that we need to
+    # add the numbers of the exercise to get the answer
+
+    return rescaled
+
 
 def Draw(pred, features, poi, mark_poi=False, name="image.png", f1_name="feature 1", f2_name="feature 2"):
     """ some plotting code designed to help you visualize your clusters """
@@ -50,7 +96,8 @@ feature_1 = "salary"
 feature_2 = "exercised_stock_options"
 feature_3 = "total_payments"
 poi  = "poi"
-features_list = [poi, feature_1, feature_2, feature_3]
+features_list = [poi, feature_1, feature_2]
+# features_list = [poi, feature_1, feature_2, feature_3]
 data = featureFormat(data_dict, features_list )
 poi, finance_features = targetFeatureSplit( data )
 
@@ -59,9 +106,12 @@ poi, finance_features = targetFeatureSplit( data )
 ### you'll want to change this line to
 ### for f1, f2, _ in finance_features:
 ### (as it's currently written, the line below assumes 2 features)
-for f1, f2,f3 in finance_features:
-    plt.scatter( f1, f3 )
+
+for f1, f2 in finance_features:
+    plt.scatter( f1, f2 )
 plt.show()
+
+
 
 ### cluster here; create predictions of the cluster labels
 ### for the data and store them to a list called pred
@@ -76,33 +126,36 @@ pred=kmeans.labels_
 
 
 # Let's stract the min and max values of exercised_stock_options
-min=maxint
-max=-1
+minimum=maxint
+maximum=-1
 evaluatedft='exercised_stock_options'
 
 # evaluating exercised_stock_options
 for i in data_dict.values():
     if(i[evaluatedft]!= 'NaN'):
-        if(i[evaluatedft] < min): min= i[evaluatedft]
-        if(i[evaluatedft] > max): max= i[evaluatedft]
+        if(i[evaluatedft] < minimum): minimum= i[evaluatedft]
+        if(i[evaluatedft] > maximum): maximum= i[evaluatedft]
 
 
-print('MIN exercised_stock_options: '+str(min))
-print('MAX exercised_stock_options: '+str(max))
+print('MIN exercised_stock_options: '+str(minimum))
+print('MAX exercised_stock_options: '+str(maximum))
 
 
 evaluatedft='salary'
-min=maxint
-max=0
+minimum=maxint
+maximum=0
 # Evaluating salary
 for i in data_dict.values():
     if(i[evaluatedft]!= 'NaN'):
-        if(i[evaluatedft] < min): min= i[evaluatedft]
-        if(i[evaluatedft] > max): max= i[evaluatedft]
+        if(i[evaluatedft] < minimum): minimum= i[evaluatedft]
+        if(i[evaluatedft] > maximum): maximum= i[evaluatedft]
 
-print('MIN salary: '+str(min))
-print('MAX salary: '+str(max))
+print('MIN salary: '+str(minimum))
+print('MAX salary: '+str(maximum))
 
+finance_features.append([200000,1000000])
+rescaled=feature_rescaling(finance_features)
+print(rescaled[-1])
 
 
 ### rename the "name" parameter when you change the number of features
